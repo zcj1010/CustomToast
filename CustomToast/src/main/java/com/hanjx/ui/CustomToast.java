@@ -2,11 +2,9 @@ package com.hanjx.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.Resources;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,22 +12,44 @@ import android.widget.FrameLayout;
 import java.lang.ref.WeakReference;
 
 public class CustomToast {
-    private WeakReference<View> customViewRef;
-    private int margin;
-    private int slideOffset;
-    private long showTime;
-    private long showAnimTime;
-    private long dismissAnimTime;
+    protected WeakReference<View> customViewRef;
 
-    private AnimatorSet animatorSet;
+    protected int leftMargin;
+    protected int topMargin;
+    protected int rightMargin;
+    protected int bottomMargin;
+    protected int gravity;
+    protected FrameLayout.LayoutParams layoutParams;
+    
+    protected long showTime;
+    protected long showAnimTime;
+    protected long dismissAnimTime;
 
-    public CustomToast setMargin(int margin) {
-        this.margin = margin;
+    protected Animator animator;
+
+    protected AnimatorListenerAdapter defaultShowAnimListener = new AnimatorListenerAdapter() { };
+    protected AnimatorListenerAdapter defaultDismissAnimListener = new AnimatorListenerAdapter() {
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            removeCustomView();
+        }
+    };
+
+    public CustomToast setLayoutParams(FrameLayout.LayoutParams layoutParams) {
+        this.layoutParams = layoutParams;
         return this;
     }
 
-    public CustomToast setSlideOffset(int slideOffset) {
-        this.slideOffset = slideOffset;
+    public CustomToast setMargin(int left, int top, int right, int bottom) {
+        this.leftMargin = left;
+        this.topMargin = top;
+        this.rightMargin = right;
+        this.bottomMargin = bottom;
+        return this;
+    }
+
+    public CustomToast setGravity(int gravity) {
+        this.gravity = gravity;
         return this;
     }
 
@@ -48,17 +68,69 @@ public class CustomToast {
         return this;
     }
 
-    public void toastView(Activity activity, View view) {
+    public void toastView(Activity activity, View customView) {
+        if (customView.getParent() != null) {
+            ((ViewGroup) customView.getParent()).removeView(customView);
+        }
         removeCustomView();
-        this.customViewRef = new WeakReference<>(view);
-        view.setTranslationY(-slideOffset);
+        this.customViewRef = new WeakReference<>(customView);
         FrameLayout decorView = (FrameLayout) activity.getWindow().getDecorView();
-        decorView.addView(view, buildLayoutParams(activity.getResources()));
-        performAnim(true);
-        view.postDelayed(() -> performAnim(false), showTime);
+        decorView.addView(customView, layoutParams != null ? layoutParams : buildLayoutParams(activity.getResources()));
+        performShowAnim();
+        customView.postDelayed(this::performDismissAnim, showTime);
     }
 
-    public FrameLayout.LayoutParams buildLayoutParams(Resources resources) {
+    private void performShowAnim() {
+        if (getCustomView() == null) {
+            return;
+        }
+        if (animator != null && animator.isRunning()) {
+            animator.cancel();
+        }
+        animator = buildShowAnim();
+        if (animator.getDuration() <= 0) {
+            animator.setDuration(showAnimTime);
+        }
+        animator.addListener(getShowListener());
+        animator.start();
+    }
+
+    private void performDismissAnim() {
+        if (getCustomView() == null) {
+            return;
+        }
+        if (animator != null && animator.isRunning()) {
+            animator.cancel();
+        }
+        animator = buildDismissAnim();
+        if (animator.getDuration() <= 0) {
+            animator.setDuration(dismissAnimTime);
+        }
+        animator.addListener(getDismissListener());
+        animator.start();
+    }
+
+    protected Animator buildShowAnim() {
+        Animator animator = ObjectAnimator.ofFloat(getCustomView(), "alpha", 0, 1);
+        animator.setDuration(showAnimTime);
+        return animator;
+    }
+
+    protected Animator buildDismissAnim() {
+        Animator animator = ObjectAnimator.ofFloat(getCustomView(), "alpha", 1, 0);
+        animator.setDuration(showAnimTime);
+        return animator;
+    }
+
+    protected AnimatorListenerAdapter getShowListener() {
+        return defaultShowAnimListener;
+    }
+
+    protected AnimatorListenerAdapter getDismissListener() {
+        return defaultDismissAnimListener;
+    }
+
+    private FrameLayout.LayoutParams buildLayoutParams(Resources resources) {
         int statusBarHeight = 0;
         int statusBarId = resources.getIdentifier("status_bar_height", "dimen", "android");
         if (statusBarId > 0) {
@@ -67,44 +139,20 @@ public class CustomToast {
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.gravity = Gravity.CENTER_HORIZONTAL;
-        lp.topMargin = statusBarHeight + margin;
+        lp.gravity = gravity;
+        lp.leftMargin = leftMargin;
+        lp.topMargin = statusBarHeight + topMargin;
+        lp.rightMargin = rightMargin;
+        lp.bottomMargin = bottomMargin;
         return lp;
     }
 
-    public void performAnim(boolean show) {
-        View customView = customViewRef.get();
-        if (customView == null) {
-            return;
-        }
-
-        if (animatorSet != null && animatorSet.isRunning()) {
-            animatorSet.cancel();
-        }
-
-        ObjectAnimator transAnim = ObjectAnimator.ofFloat(customView, "translationY",
-                show ? -slideOffset : 0, show ? 0 : -slideOffset);
-        ObjectAnimator alphaAnim = ObjectAnimator.ofFloat(customView, "alpha",
-                show ? 0 : 1, show ? 1 : 0);
-        animatorSet = new AnimatorSet();
-        animatorSet.playTogether(transAnim, alphaAnim);
-        animatorSet.setDuration(show ? showAnimTime : dismissAnimTime);
-
-        if (!show) {
-            animatorSet.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    removeCustomView();
-                }
-            });
-        }
-
-        animatorSet.start();
+    public View getCustomView() {
+        return customViewRef == null ? null : customViewRef.get();
     }
 
     public void removeCustomView() {
-        if (customViewRef != null && customViewRef.get() != null) {
+        if (getCustomView() != null) {
             View customView = customViewRef.get();
             if (customView.getParent() != null) {
                 ((ViewGroup) customView.getParent()).removeView(customView);

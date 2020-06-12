@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.hanjx.ui.CustomToast;
+import com.hanjx.ui.NotificationToast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,20 +20,37 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = new TextView(this);
         textView.setPadding(100, 0, 100, 0);
         textView.setGravity(Gravity.CENTER);
-        textView.setText("测试");
+        textView.setText("测试1");
         textView.setTextSize(30);
         textView.setTextColor(0xFFFFFFFF);
         textView.setBackgroundColor(0xFF3C7CFC);
 
+        TextView textView2 = new TextView(this);
+        textView2.setPadding(100, 0, 100, 0);
+        textView2.setGravity(Gravity.CENTER);
+        textView2.setText("测试2");
+        textView2.setTextSize(30);
+        textView2.setTextColor(0xFFFFFFFF);
+        textView2.setBackgroundColor(0xFF3C7CFC);
+
         View view = findViewById(R.id.text);
         view.setOnClickListener(v -> {
             new CustomToast()
-                    .setSlideOffset(100)
-                    .setMargin(200)
-                    .setShowAnimTime(200)
-                    .setDismissAnimTime(200)
-                    .setShowTime(2500)
+                    .setMargin(0, 400, 0, 0)
+                    .setShowTime(2000)
+                    .setShowAnimTime(300)
+                    .setDismissAnimTime(300)
+                    .setGravity(Gravity.CENTER_HORIZONTAL)
                     .toastView(this, textView);
+            new NotificationToast()
+                    .setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM)
+                    .setMargin(0, 0, 0, 200)
+                    .setSlideOffset(100)
+                    .setOrientation(NotificationToast.BOTTOM)
+                    .setShowTime(2000)
+                    .setShowAnimTime(400)
+                    .setDismissAnimTime(400)
+                    .toastView(this, textView2);
         });
     }
 }
