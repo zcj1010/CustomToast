@@ -27,7 +27,12 @@ public class CustomToast {
 
     protected Animator animator;
 
-    protected AnimatorListenerAdapter defaultShowAnimListener = new AnimatorListenerAdapter() { };
+    protected AnimatorListenerAdapter defaultShowAnimListener = new AnimatorListenerAdapter() {
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            getCustomView().setAlpha(1);
+        }
+    };
     protected AnimatorListenerAdapter defaultDismissAnimListener = new AnimatorListenerAdapter() {
         @Override
         public void onAnimationEnd(Animator animation) {
@@ -75,6 +80,7 @@ public class CustomToast {
         removeCustomView();
         this.customViewRef = new WeakReference<>(customView);
         FrameLayout decorView = (FrameLayout) activity.getWindow().getDecorView();
+        customView.setAlpha(0);
         decorView.addView(customView, layoutParams != null ? layoutParams : buildLayoutParams(activity.getResources()));
         performShowAnim();
         customView.postDelayed(this::performDismissAnim, showTime);
