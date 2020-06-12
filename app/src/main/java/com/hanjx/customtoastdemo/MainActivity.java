@@ -45,11 +45,11 @@ public class MainActivity extends AppCompatActivity {
         View view = findViewById(R.id.text);
         view.setOnClickListener(v -> {
             new CustomToast()
-                    .setMargin(0, 400, 0, 0)
+                    .setMargin(0, 0, 0, 900)
                     .setShowTime(2000)
                     .setShowAnimTime(300)
                     .setDismissAnimTime(300)
-                    .setGravity(Gravity.CENTER_HORIZONTAL)
+                    .setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM)
                     .toastView(this, textView);
 
             new NotificationToast()
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                     .setDismissAnimTime(400)
                     .toastView(this, textView2);
 
-            SimpleToast.toastLong(this, textView3);
+            SimpleToast.toastShort(this, textView3);
         });
     }
 }
