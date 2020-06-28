@@ -1,6 +1,6 @@
 # CustomToast
 
-Android 11 中将禁止使用自定义 View 的 Toast，本控件通过在 DecorView 中动态添加删除 View，加入淡入、淡出、滑动的动画效果，实现自定义 View 的 Toast 效果。
+Android 11 中将禁止使用自定义 View 的 Toast，一种简单的解决思路是通过在 DecorView 中动态添加删除 View，加入淡入、淡出、滑动的动画效果，实现自定义 View 的 Toast 效果。
 
 + 普通 Toast 样式：CustomToast、SimpleToast
 + 类似系统通知的横幅效果：NotificationToast
@@ -23,14 +23,13 @@ dependencies {
 ```
 
 
-
-### 使用，需传入 Activity
+### 使用
 
 ```Java
 // SimpleToast 底部 Toast，类似原生文字 Toast
-SimpleToast.toastShort(this, textView);
-// SimpleToast.toastLong(this, textView);
-// SimpleToast.toastTime(this, textView, 1000);
+SimpleToast.toastShort(textView3);
+// SimpleToast.toastLong(textView3);
+// SimpleToast.toastTime(textView3, 1000);
 
 // CustomToast 可自定义位置，持续时长，动画时长
 new CustomToast()
@@ -39,7 +38,7 @@ new CustomToast()
         .setShowAnimTime(300)
         .setDismissAnimTime(300)
         .setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM)
-        .toastView(this, textView);
+        .toastView(textView);
 
 // NotificationToast 通知样式 Toast，可在任意方向弹出 Toast
 new NotificationToast()
@@ -50,9 +49,10 @@ new NotificationToast()
         .setShowTime(2000)
         .setShowAnimTime(400)
         .setDismissAnimTime(400)
-        .toastView(this, textView2);
+        .toastView(textView2);
 ```
 
 ### 效果
 
 ![image](https://github.com/hanjx-dut/CustomToast/blob/master/demo.gif)
+
