@@ -18,7 +18,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'com.github.hanjx-dut:CustomToast:Tag'
+    implementation 'com.github.hanjx-dut:CustomToast:1.1'
 }
 ```
 
