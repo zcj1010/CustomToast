@@ -28,7 +28,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation project(':CustomToast')
+//    implementation project(':CustomToast')
+    implementation 'com.github.hanjx-dut:CustomToast:1.1'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
