@@ -1,45 +1,44 @@
 package com.hanjx.ui;
 
-import android.app.Activity;
 import android.view.Gravity;
 import android.view.View;
 
 public class SimpleToast extends CustomToast {
-    public static void toastShort(Activity activity, View view) {
+    public static void toastShort(View view) {
         new SimpleToast()
-                .setupDefault(activity)
-                .toastView(activity, view);
+                .setupDefault()
+                .toastView(view);
     }
 
-    public static void toastLong(Activity activity, View view) {
+    public static void toastLong(View view) {
         new SimpleToast()
-                .setupLong(activity)
-                .toastView(activity, view);
+                .setupLong()
+                .toastView(view);
     }
 
-    public static void toastTime(Activity activity, View view, long showTime) {
+    public static void toastTime(View view, long showTime) {
         new SimpleToast()
-                .setupDefault(activity)
+                .setupDefault()
                 .setShowTime(showTime)
-                .toastView(activity, view);
+                .toastView(view);
     }
 
-    public SimpleToast setupDefault(Activity activity) {
+    public SimpleToast setupDefault() {
         gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-        bottomMargin = (int) (getScreenHeight(activity) * 0.1f);
-        showAnimTime = 200;
-        dismissAnimTime = 200;
+        bottomMargin = (int) (getScreenHeight() * 0.1f);
+        showAnimTime = 300;
+        dismissAnimTime = 250;
         showTime = 1500;
         return this;
     }
 
-    public SimpleToast setupLong(Activity activity) {
-        setupDefault(activity);
+    public SimpleToast setupLong() {
+        setupDefault();
         showTime = 3000;
         return this;
     }
 
-    public int getScreenHeight(Activity activity) {
-        return activity.getResources().getDisplayMetrics().heightPixels;
+    public int getScreenHeight() {
+        return getActivity().getResources().getDisplayMetrics().heightPixels;
     }
 }

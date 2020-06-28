@@ -45,24 +45,24 @@ public class MainActivity extends AppCompatActivity {
         View view = findViewById(R.id.text);
         view.setOnClickListener(v -> {
             new CustomToast()
-                    .setMargin(0, 0, 0, 900)
+                    .setMargin(0, 0, 0, 800)
                     .setShowTime(2000)
                     .setShowAnimTime(300)
                     .setDismissAnimTime(300)
                     .setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM)
-                    .toastView(this, textView);
+                    .toastView(textView);
 
             new NotificationToast()
                     .setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM)
-                    .setMargin(0, 0, 0, 600)
+                    .setMargin(0, 0, 0, 500)
                     .setSlideOffset(100)
                     .setOrientation(NotificationToast.BOTTOM)
                     .setShowTime(2000)
                     .setShowAnimTime(400)
                     .setDismissAnimTime(400)
-                    .toastView(this, textView2);
+                    .toastView(textView2);
 
-            SimpleToast.toastShort(this, textView3);
+            SimpleToast.toastShort(textView3);
         });
     }
 }

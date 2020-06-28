@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.blankj.utilcode.util.ActivityUtils;
+
 import java.lang.ref.WeakReference;
 
 public class CustomToast {
@@ -73,12 +75,13 @@ public class CustomToast {
         return this;
     }
 
-    public void toastView(Activity activity, View customView) {
+    public void toastView(View customView) {
         if (customView.getParent() != null) {
             ((ViewGroup) customView.getParent()).removeView(customView);
         }
         removeCustomView();
         this.customViewRef = new WeakReference<>(customView);
+        Activity activity = getActivity();
         FrameLayout decorView = (FrameLayout) activity.getWindow().getDecorView();
         customView.setAlpha(0);
         decorView.addView(customView, layoutParams != null ? layoutParams : buildLayoutParams(activity.getResources()));
@@ -165,5 +168,12 @@ public class CustomToast {
             }
             customViewRef.clear();
         }
+    }
+
+    public Activity getActivity() {
+        if (customViewRef == null || customViewRef.get() == null) {
+            return ActivityUtils.getTopActivity();
+        }
+        return ActivityUtils.getActivityByContext(customViewRef.get().getContext());
     }
 }
